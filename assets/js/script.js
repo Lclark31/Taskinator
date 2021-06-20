@@ -5,6 +5,8 @@ let taskIdCounter = 0;
 let tasksInProgressEl = document.querySelector(`#tasks-in-progress`);
 let tasksCompletedEl = document.querySelector(`#tasks-completed`);
 
+let tasks = [];
+
 let taskFormHandler = function (event) {
   event.preventDefault();
   // set the value of the variables to the value of the input in the browser
@@ -25,6 +27,7 @@ let taskFormHandler = function (event) {
     let taskDataObj = {
       name: taskNameInput,
       type: taskTypeInput,
+      status: `to do`,
     };
 
     createTaskEl(taskDataObj);
@@ -50,6 +53,9 @@ let createTaskEl = function (taskDataObj) {
     `</span>`;
   // assign the variables as children elements to the pre-existing elements in the html
   listItemEl.appendChild(taskInfoEl);
+
+  taskDataObj.id = taskIdCounter;
+  tasks.push(taskDataObj);
 
   let taskActionsEl = createTaskActions(taskIdCounter);
   listItemEl.appendChild(taskActionsEl);
@@ -113,6 +119,13 @@ let deleteTask = function (taskId) {
     ".task-item[data-task-id='" + taskId + "']"
   );
   taskSelected.remove();
+
+  for (var i = 0; i < tasks.length; i++) {
+    if (tasks[i].id !== parseInt(taskId)) {
+      updatedTaskArr.push(tasks[i]);
+    }
+  }
+  tasks = updatedTaskArr;
 };
 
 let editTask = function (taskId) {
@@ -140,6 +153,13 @@ let completeEditTask = function (taskName, taskType, taskId) {
   taskSelected.querySelector("h3.task-name").textContent = taskName;
   taskSelected.querySelector("span.task-type").textContent = taskType;
 
+  for (var i = o; i < tasks.length; i++) {
+    if (tasks[i].id === parseInt(taskId)) {
+      tasks[i].name = taskName;
+      tasks[i].type = taskType;
+    }
+  }
+
   alert("Task Updated!");
 
   formEl.removeAttribute("data-task-id");
@@ -162,6 +182,13 @@ let taskStatusChangeHandler = function (event) {
   } else if (statusValue === "completed") {
     tasksCompletedEl.appendChild(taskSelected);
   }
+
+  for (var i = 0; i < tasks.length; i++) {
+    if (tasks[i].id === parseInt(taskId)) {
+      tasks[i].status = statusValue;
+    }
+  }
+  console.log(tasks);
 };
 
 formEl.addEventListener(`submit`, taskFormHandler);
